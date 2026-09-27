@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study Nook 學習時光 - 專屬學習計畫</title>
+  
+  <!-- 載入 Google 字體 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Zen+Kurenaido&family=Noto+Serif+TC:wght@400;600&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-main: #f8f6fc;
+      --bg-card: #ffffff;
+      --text-dark: #443f4a;
+      --text-muted: #827a8c;
+      --accent-green: #7e8393;
+      --accent-green-light: #eae6ef;
+      --accent-warm: #937eb2;
+      --accent-warm-light: #efebe9;
+      --accent-blue: #7c85a8;
+      --accent-blue-light: #ebedf5;
+      --border-color: #e2dcf5;
+      --shadow-soft: 0 8px 24px rgba(130, 122, 140, 0.08);
+      --radius-lg: 18px;
+      --radius-sm: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Zen Kurenaido', 'Caveat', 'Noto Serif TC', cursive, sans-serif !important;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-dark);
+      line-height: 1.6;
+      padding-bottom: 60px;
+    }
+
+    header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      padding: 20px 0;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      color: var(--accent-warm);
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .sub-motto {
+      font-size: 1.2rem;
+      color: var(--accent-warm);
+      font-weight: bold;
+      margin-top: 4px;
+    }
+
+    .quote-box {
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+      font-style: italic;
+    }
+
+    .top-realtime-clock {
+      font-size: 0.95rem;
+      color: var(--accent-warm);
+      font-weight: bold;
+      margin-top: 6px;
+    }
+
+    /* 導覽分頁按鈕群組 */
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+      padding: 0 10px;
+    }
+
+    nav button {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      padding: 8px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      color: var(--text-dark);
+      transition: all 0.25s ease;
+    }
+
+    nav button.active, nav button:hover {
+      background-color: var(--accent-warm);
+      color: white;
+      border-color: var(--accent-warm);
+      box-shadow: 0 4px 12px rgba(147, 126, 178, 0.25);
+    }
+
+    .container {
+      max-width: 1050px;
+      margin: 25px auto;
+      padding: 0 20px;
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 24px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .card-title {
+      font-size: 1.5rem;
+      color: var(--text-dark);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 2px dashed var(--accent-warm-light);
+      padding-bottom: 8px;
+    }
+
+    .date-picker-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--accent-warm-light);
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 20px;
+      font-size: 1.05rem;
+      color: var(--accent-warm);
+      font-weight: bold;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .date-picker-bar input[type="date"] {
+      width: auto;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--accent-warm);
+      background: white;
+    }
+
+    input[type="text"], input[type="time"], input[type="date"], select, textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      background-color: #fbfafc;
+      font-size: 1.05rem;
+      color: var(--text-dark);
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent-warm);
+      background-color: #fff;
+    }
+
+    input:disabled, select:disabled {
+      background-color: #eee9f5;
+      color: var(--text-muted);
+      cursor: not-allowed;
+    }
+
+    .btn {
+      background-color: var(--accent-warm);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: opacity 0.2s;
+      display: inline-block;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .todo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .todo-grid { grid-template-columns: 1fr; }
+    }
+
+    .todo-list {
+      list-style: none;
+      margin-top: 12px;
+    }
+
+    .todo-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: var(--bg-main);
+      border-radius: var(--radius-sm);
+      margin-bottom: 8px;
+    }
+
+    .todo-item.completed span {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .todo-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: var(--accent-warm);
+    }
+
+    .ypt-timer-card {
+      text-align: center;
+      background: linear-gradient(135deg, #fdfbfd 0%, #f4efe6 100%);
+      border: 2px solid var(--border-color);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .timer-circle {
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 10px solid var(--accent-warm-light);
+      margin: 20px auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      box-shadow: inset 0 4px 10px rgba(0,0,0,0.03), var(--shadow-soft);
+      position: relative;
+    }
+
+    .timer-display {
+      font-size: 3rem;
+      font-weight: bold;
+      color: var(--accent-warm);
+      letter-spacing: 2px;
+    }
+
+    .timer-mode {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+    }
+
+    .timer-controls {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+
+    .timer-mode-switch {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .mode-switch-btn {
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      padding: 6px 14px;
+      border-radius: 15px;
+      cursor: pointer;
+      font-size: 1rem;
+      color: var(--text-dark);
+    }
+
+    .mode-switch-btn.active {
+      background: var(--accent-warm);
+      color: white;
+      border-color: var(--accent-warm);
+    }
+
+    .timeline-container {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-top: 15px;
+    }
+
+    .timeline-hour {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      align-items: center;
+      min-height: 48px;
+      border-bottom: 1px dashed #efebe4;
+      padding: 4px 0;
+    }
+
+    .time-label {
+      font-size: 1rem;
+      color: var(--text-muted);
+      text-align: right;
+      padding-right: 15px;
+    }
+
+    .event-block {
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 1.05rem;
+      background: #f5f2eb;
+      color: var(--text-dark);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .event-block.school {
+      background-color: var(--accent-blue-light);
+      color: var(--accent-blue);
+      border-left: 4px solid var(--accent-blue);
+    }
+
+    .event-block.cram {
+      background-color: var(--accent-warm-light);
+      color: var(--accent-warm);
+      border-left: 4px solid var(--accent-warm);
+    }
+
+    .event-block.meal {
+      background-color: #fef7e0;
+      color: #b8860b;
+      border-left: 4px solid #f0c040;
+    }
+
+    .event-block.break {
+      background-color: #f0f0f0;
+      color: #888;
+      font-style: italic;
+    }
+
+    .break-task-input {
+      border: 1px solid rgba(0,0,0,0.1);
+      background: rgba(255,255,255,0.7);
+      padding: 3px 8px;
+      font-size: 0.9rem;
+      border-radius: 4px;
+      outline: none;
+      width: 100%;
+    }
+
+    .break-task-input:focus {
+      background: white;
+      border-color: var(--accent-warm);
+    }
+
+    .timeline-input {
+      width: 100%;
+      border: 1px solid transparent;
+      background: transparent;
+      padding: 6px 10px;
+      font-size: 1.05rem;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .timeline-input:hover {
+      background: #f3efe9;
+      border-color: var(--border-color);
+    }
+
+    .timeline-input:focus {
+      background: white;
+      border-color: var(--accent-warm);
+    }
+
+    .skin-options {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 10px 0;
+    }
+
+    .skin-btn {
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
+      padding: 8px 14px;
+      border-radius: 15px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+
+    .skin-btn.selected {
+      background: var(--accent-warm);
+      color: white;
+      border-color: var(--accent-warm);
+    }
+
+    .track-section {
+      margin-bottom: 20px;
+      background: var(--bg-main);
+      padding: 15px;
+      border-radius: var(--radius-sm);
+    }
+
+    .track-title {
+      font-size: 1.2rem;
+      color: var(--accent-warm);
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    .summary-box {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+      background: var(--accent-warm-light);
+      padding: 15px 20px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 15px;
+    }
+
+    .summary-item {
+      text-align: center;
+    }
+
+    .summary-item .num {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--accent-warm);
+    }
+
+    .formula-explanation {
+      background: #faf8f5;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-top: 12px;
+      border-left: 4px solid var(--accent-warm);
+      line-height: 1.6;
+    }
+
+    .history-card {
+      background: #fdfbfd;
+      border: 1px solid var(--border-color);
+      padding: 15px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Study Nook 學習時光</h1>
+    <div class="sub-motto">我能！我行！我可以！</div>
+    <div class="quote-box" id="dailyQuote">載入每日勵志語錄中...</div>
+    <div class="top-realtime-clock" id="topRealtimeClock">⏰ 目前時間：載入中...</div>
+    
+    <!-- 導覽分頁按鈕 -->
+    <nav>
+      <button class="nav-btn active" onclick="switchTab('tab-daily')">今日計畫</button>
+      <button class="nav-btn" onclick="switchTab('tab-timer')">⏱️ 專注計時器</button>
+      <button class="nav-btn" onclick="switchTab('tab-schedule')">📅 時間軸與週課表</button>
+      <button class="nav-btn" onclick="switchTab('tab-progress')">📈 三軌進度勾選</button>
+      <button class="nav-btn" onclick="switchTab('tab-journal')">🌿 心靈樹洞與肌膚紀錄</button>
+      <button class="nav-btn" onclick="switchTab('tab-history')">📜 歷史與前幾天回顧</button>
+    </nav>
+  </header>
+
+  <div class="container">
+
+    <!-- 1. 今日計畫 頁籤 -->
+    <div id="tab-daily" class="tab-content active">
+      <div class="date-picker-bar">
+        <span id="dateDisplay1">📅 今日日期：載入中...</span>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <label style="font-size: 0.95rem;">切換日期：</label>
+          <input type="date" id="globalDatePicker" onchange="onDateChanged(this.value)">
+        </div>
+      </div>
+
+      <!-- 待辦清單 -->
+      <div class="card">
+        <div class="card-title">📝 每日雙軌作業待辦清單</div>
+        <div class="todo-grid">
+          <div>
+            <h3 style="color: var(--accent-blue); margin-bottom: 10px;">🏫 學校作業</h3>
+            <div style="display: flex; gap: 8px;">
+              <input type="text" id="schoolTodoInput" placeholder="新增學校作業/考試...">
+              <button class="btn" onclick="addTodo('school')">新增</button>
+            </div>
+            <ul class="todo-list" id="schoolTodoList"></ul>
+          </div>
+          <div>
+            <h3 style="color: var(--accent-warm); margin-bottom: 10px;">🌱 自主作業與進度</h3>
+            <div style="display: flex; gap: 8px;">
+              <input type="text" id="selfTodoInput" placeholder="新增自主題目/預習進度...">
+              <button class="btn" onclick="addTodo('self')">新增</button>
+            </div>
+            <ul class="todo-list" id="selfTodoList"></ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 統計數據 -->
+      <div class="card">
+        <div class="card-title">⏳ 今日黃金時間與扣除統計</div>
+        
+        <div class="summary-box" style="grid-template-columns: 1fr;">
+          <div class="summary-item" style="background: #fff; padding: 20px; border-radius: var(--radius-sm); border: 2px solid var(--accent-warm);">
+            <div style="font-size: 1.2rem; color: var(--text-muted); margin-bottom: 6px;">⚠️ 截至目前浪費時間</div>
+            <div class="num" id="wastedTime" style="font-size: 3rem; color: var(--accent-warm);">0.00 小時</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 15px; margin-bottom: 20px; font-size: 0.95rem; color: var(--text-muted); justify-content: space-around; background: var(--accent-warm-light); padding: 10px; border-radius: var(--radius-sm);">
+          <div>總可用：24.0h</div>
+          <div>固定扣除：<span id="totalDeduction">9.25h</span></div>
+          <div>剩餘黃金讀書：<span id="goldenTime">14.75h</span></div>
+        </div>
+
+        <!-- 參數設定：起床、睡覺、三餐 分組排版避免擠壓 -->
+        <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 15px;">
+          <!-- 第一組：起床與睡覺排在一起 -->
+          <div style="background: var(--bg-main); padding: 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+            <div style="font-size: 1.1rem; font-weight: bold; color: var(--accent-warm); margin-bottom: 10px;">🌅 起床與睡覺作息</div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px;">
+              <div>
+                <label id="wakeUpLabel" style="display: block; margin-bottom: 6px; font-size: 0.95rem;">起床時間 (平日鎖定/假日可填)：</label>
+                <input type="time" id="wakeUpTime" value="07:15" onchange="onWakeUpChanged(this.value)">
+              </div>
+              <div>
+                <label id="sleepLabel" style="display: block; margin-bottom: 6px; font-size: 0.95rem;">睡覺時間 (平日固定00:00/假日自訂)：</label>
+                <input type="time" id="sleepTime" value="00:00" onchange="onSleepChanged(this.value)">
+              </div>
+            </div>
+          </div>
+
+          <!-- 第二組：三餐時間排在一起 -->
+          <div style="background: var(--bg-main); padding: 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+            <div style="font-size: 1.1rem; font-weight: bold; color: var(--accent-warm); margin-bottom: 10px;">🍱 三餐時間設定</div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;">
+              <div>
+                <label id="breakfastLabel" style="display: block; margin-bottom: 6px; font-size: 0.95rem;">早餐時間 (平日07:30-07:40)：</label>
+                <div style="display: flex; gap: 6px;">
+                  <input type="time" id="breakfastStart" value="07:30" onchange="calculateTime()">
+                  <input type="time" id="breakfastEnd" value="07:40" onchange="calculateTime()">
+                </div>
+              </div>
+              <div>
+                <label id="breakfastLabel" style="display: block; margin-bottom: 6px; font-size: 0.95rem;">午餐時間 (平日11:55-12:30)：</label>
+                <div style="display: flex; gap: 6px;">
+                  <input type="time" id="breakfastStart" value="07:30" onchange="calculateTime()">
+                  <input type="time" id="breakfastEnd" value="07:40" onchange="calculateTime()">
+                </div>
+              </div>
+              <div>
+                <label style="display: block; margin-bottom: 6px; font-size: 0.95rem;">晚餐時間：</label>
+                <div style="display: flex; gap: 6px;">
+                  <input type="time" id="dinnerStart" value="17:00" onchange="calculateTime()">
+                  <input type="time" id="dinnerEnd" value="18:00" onchange="calculateTime()">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="formula-explanation" id="calcProcessBox">
+          📌 <b>今日浪費時間明確計算過程：</b><br>
+          (計算中...)
+        </div>
+
+        <div style="background: #faf8f5; padding: 10px; border-radius: 8px; font-size: 0.95rem; color: var(--text-muted); margin-top: 10px;">
+          • 今日補習：<span id="todayCramInfo">讀取中...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. 專注計時器 頁籤 -->
+    <div id="tab-timer" class="tab-content">
+      <div class="date-picker-bar">
+        <span id="dateDisplayTimer">📅 今日日期：載入中...</span>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <label style="font-size: 0.95rem;">切換日期：</label>
+          <input type="date" class="sync-date-input" onchange="onDateChanged(this.value)">
+        </div>
+      </div>
+
+      <div class="card ypt-timer-card">
+        <div class="card-title" style="justify-content: center; border: none; margin-bottom: 5px;">⏱️ 專注計時器</div>
+        
+        <div class="timer-mode-switch">
+          <button class="mode-switch-btn active" id="btnCountdownMode" onclick="setTimerType('countdown')">倒計時 (50m)</button>
+          <button class="mode-switch-btn" id="btnStopwatchMode" onclick="setTimerType('stopwatch')">正計時 (碼錶)</button>
+        </div>
+
+        <div class="timer-circle">
+          <div class="timer-mode" id="timerMode">專注中 (50m)</div>
+          <div class="timer-display" id="timerDisplay">50:00</div>
+        </div>
+
+        <div class="timer-controls">
+          <button class="btn" style="padding: 6px 14px; font-size: 1rem;" onclick="startTimer()">開始</button>
+          <button class="btn" style="padding: 6px 14px; font-size: 1rem; background-color: var(--accent-green);" onclick="pauseTimer()">暫停</button>
+          <button class="btn" style="padding: 6px 14px; font-size: 1rem; background-color: var(--text-muted);" onclick="resetTimer()">重置</button>
+        </div>
+
+        <div style="margin-top: 15px; font-size: 1.1rem;">
+          本日已專注累積：<span id="todayStudyTotal" style="font-weight: bold; color: var(--accent-warm);">0</span> 分鐘
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. 時間軸與週課表 頁籤 -->
+    <div id="tab-schedule" class="tab-content">
+      <div class="date-picker-bar">
+        <span id="dateDisplay2">📅 今日日期：載入中...</span>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <label style="font-size: 0.95rem;">切換日期：</label>
+          <input type="date" class="sync-date-input" onchange="onDateChanged(this.value)">
+        </div>
+      </div>
+
+      <!-- 24小時整點時間軸 -->
+      <div class="card">
+        <div class="card-title">📅 24小時時間軸</div>
+        <div id="sprintBanner" style="font-size: 1.15rem; color: var(--accent-warm); font-weight: bold; margin-bottom: 12px; background: var(--accent-warm-light); padding: 10px 14px; border-radius: var(--radius-sm); display: none;">
+          🌟 全天自主黃金讀書衝刺日
+        </div>
+        <div id="tueCramBanner" style="font-size: 1.15rem; color: var(--accent-warm); font-weight: bold; margin-bottom: 12px; background: var(--accent-warm-light); padding: 10px 14px; border-radius: var(--radius-sm); display: none;">
+          📖 星期二晚上：物理課
+        </div>
+        <p style="color: var(--text-muted); margin-bottom: 10px;">除特定固定時段外，其餘時段皆可直接點擊下方輸入框填寫您的自訂規劃：</p>
+        
+        <div class="timeline-container" id="timelineGrid"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📖 固定補習時間規劃表</div>
+        <ul style="list-style: none; line-height: 2;">
+          <li><b>星期一：</b> 🌟 全天自主黃金讀書衝刺日 (無補習)</li>
+          <li><b>星期二：</b> 晚上物理課 (上方備註顯示，網格內不標時間)</li>
+          <li><b>星期三：</b> 立人 高一數學 (18:00 - 21:00)</li>
+          <li><b>星期四：</b> 立人 高二數學 (18:00 - 21:00)</li>
+          <li><b>星期五：</b> 無補習 (自主讀書日)</li>
+          <li><b>星期六：</b> 立人 高一英文 (18:00 - 21:00)</li>
+          <li><b>星期日：</b> 🌟 全天自主黃金讀書衝刺日 (無補習)</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 4. 三軌進度勾選 頁籤 -->
+    <div id="tab-progress" class="tab-content">
+      <div class="date-picker-bar">
+        <span id="dateDisplay3">📅 今日日期：載入中...</span>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <label style="font-size: 0.95rem;">切換日期：</label>
+          <input type="date" class="sync-date-input" onchange="onDateChanged(this.value)">
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📈 三軌進度勾選與管理</div>
+        <div class="track-section">
+          <div class="track-title">📚 軌道一：讀書進度（課本 / 講義觀念）</div>
+          <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+            <input type="text" id="track1Input" placeholder="例如：化學選修五 Ch1 觀念複習...">
+            <button class="btn" onclick="addTrackItem(1)">新增項目</button>
+          </div>
+          <ul class="todo-list" id="track1List"></ul>
+        </div>
+
+        <div class="track-section">
+          <div class="track-title">✏️ 軌道二：題本與刷題進度</div>
+          <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+            <input type="text" id="track2Input" placeholder="例如：高一數學講義 p.20-p.35...">
+            <button class="btn" onclick="addTrackItem(2)">新增項目</button>
+          </div>
+          <ul class="todo-list" id="track2List"></ul>
+        </div>
+
+        <div class="track-section">
+          <div class="track-title">🚀 軌道三：自主超修進度</div>
+          <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+            <input type="text" id="track3Input" placeholder="例如：提前預習物理 Ch2 選修...">
+            <button class="btn" onclick="addTrackItem(3)">新增項目</button>
+          </div>
+          <ul class="todo-list" id="track3List"></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. 🌿 心靈樹洞與肌膚紀錄 頁籤 -->
+    <div id="tab-journal" class="tab-content">
+      <div class="date-picker-bar">
+        <span id="dateDisplay4">📅 今日日期：載入中...</span>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <label style="font-size: 0.95rem;">切換日期：</label>
+          <input type="date" class="sync-date-input" onchange="onDateChanged(this.value)">
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🌿 心靈樹洞日記與每日肌膚紀錄</div>
+        
+        <div style="margin-bottom: 15px;">
+          <label style="font-weight: bold; font-size: 1.1rem;">✨ 今日肌膚狀態：</label>
+          <div class="skin-options">
+            <button class="skin-btn selected" onclick="selectSkin(this, '💧 穩定水潤')">💧 穩定水潤</button>
+            <button class="skin-btn" onclick="selectSkin(this, '✨ T字油光/粉刺')">✨ T字油光/粉刺</button>
+            <button class="skin-btn" onclick="selectSkin(this, '🌋 冒青春痘/生理痘')">🌋 冒青春痘/生理痘</button>
+            <button class="skin-btn" onclick="selectSkin(this, '🌸 敏感泛紅/乾癢')">🌸 敏感泛紅/乾癢</button>
+            <button class="skin-btn" onclick="selectSkin(this, '😴 熬夜暗沉/黑眼圈')">😴 熬夜暗沉/黑眼圈</button>
+            <button class="skin-btn" onclick="selectSkin(this, '🌵 兩頰乾燥脫皮')">🌵 兩頰乾燥脫皮</button>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+          <label style="font-weight: bold; font-size: 1.1rem;">😊 今日心情：</label>
+          <select id="journalMood" style="width: auto; display: inline-block; margin-left: 10px;">
+            <option value="🌟 超級開心/成就感">🌟 超級開心/成就感</option>
+            <option value="🔥 充滿幹勁/準備衝刺">🔥 充滿幹勁/準備衝刺</option>
+            <option value="😊 平靜順利/小確幸">😊 平靜順利/小確幸</option>
+            <option value="😐 普普通通/有點小累">😐 普普通通/有點小累</option>
+            <option value="🌧️ 考試壓力大/焦慮">🌧️ 考試壓力大/焦慮</option>
+            <option value="💤 睡眠不足/精神不濟">💤 睡眠不足/精神不濟</option>
+            <option value="🥀 心情煩躁/emo一下">🥀 心情煩躁/emo一下</option>
+          </select>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+          <label style="font-weight: bold; font-size: 1.1rem;">📝 樹洞傾訴日記：</label>
+          <textarea id="journalText" rows="6" placeholder="寫下今天的喜怒哀樂、讀書心得，或想對自己說的話..."></textarea>
+        </div>
+
+        <button class="btn" style="width: 100%;" onclick="saveJournal()">保存今日日記與肌膚紀錄</button>
+      </div>
+    </div>
+
+    <!-- 6. 歷史與前幾天回顧 頁籤 -->
+    <div id="tab-history" class="tab-content">
+      <div class="date-picker-bar">
+        <span id="dateDisplay5">📅 今日日期：載入中...</span>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <label style="font-size: 0.95rem;">切換日期：</label>
+          <input type="date" class="sync-date-input" onchange="onDateChanged(this.value)">
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📜 歷史與前幾天回顧</div>
+        <p style="color: var(--text-muted); margin-bottom: 15px;">在這裡回顧您留下的每一次努力與心情紀錄：</p>
+        <div id="historyLogsList"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const quotes = [
+      "「承認自己不是最優秀的，其實也是一種成長🌱」",
+      "「如果說野百合會遇到春天，野路子也能抵達夢想的羅馬🌿」",
+      "「所謂命運，不過是弱者的藉口，而它是強者的玩笑，做自己命運的主宰💪」",
+      "「往上爬的路，不比站在山頂更美嗎？」",
+      "「人生是漫長的長跑，不在一時一刻的快與慢。」",
+      "「接受不勞而獲，接受不翼而飛，接受事與願違。」",
+      "「當命運垂青我的時候，我就信命，當命運不垂青我的時候，我就不信。」",
+      "「人生是沒有標準答案的。害怕犯錯而不去犯錯，才是最大的錯誤。」",
+      "「不要忘記看一路的風景，不要為別人的評論而活，享受自己的人生。」",
+      "「勇敢不是什麼都敢做，而是你可以坦然地面對一切未知。 ——駱嘉昀」",
+      "「天賦是基礎，天花板一樣的東西，但是你沒有努力，一輩子都搆不到天花板。」",
+      "「請你一定要一如既往地努力、勇敢，保持微笑！」",
+      "「成長永遠是未完成的狀態。」",
+      "「輕言放棄的人，永遠不知道自己離成功有多近。」",
+      "「我很普通，但我一定不會平凡。」",
+      "「沒有那摩多天賦異凜，優秀的人都是翻山越嶺。」",
+      "「今天流下的汗水，會變成明天底氣十足的微笑。」",
+      "「從來都不會有第二個你，你也不會成為第二個別人。我們都是最了不起的自己。」",
+      "「哪怕走得慢，也總比原地踏步強，向前就是進步。」",
+      "「背挺直一點，往前站一點。」",
+      "「熱愛會穿越時間，把明天兌現成期待。」",
+      "「光鮮亮麗只是表面，努力務實才是內核。」",
+      "「錯過了今天晚上的月亮，但也許你會遇到明天的朝陽。」",
+      "「我有足夠的積累，而且我一直在路上，所以我有無限的可能。」",
+      "「永遠保持90分的狀態，60分的謙卑。」",
+      "「不拼一把，你永遠不知道自己有多大潛能。」",
+      "「幹就完了，世界上的比較是沒有盡頭的。」",
+      "「你的人生是跟自己去比，至少在現階段，我達成了我之前所嚮往的。」",
+      "「時間會帶走鋒芒，也會留下光芒✨」",
+      "「已識乾坤大，猶憐草木青」",
+      "「放輕鬆一點，世界不過是你的遊樂場」",
+      "「當機會出現時，是不是可以給自己人生多一種可能性。」"
+    ];
+
+    let currentDateStr = new Date().toISOString().split('T')[0];
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const randomQ = quotes[Math.floor(Math.random() * quotes.length)];
+      document.getElementById("dailyQuote").innerText = randomQ;
+
+      syncDateInputs();
+      loadDataForCurrentDate();
+
+      // 即時頂部時鐘更新
+      updateRealtimeClock();
+      setInterval(updateRealtimeClock, 1000);
+
+      // 每分鐘自動重新計算浪費時間
+      setInterval(() => {
+        calculateTime();
+      }, 60000);
+    });
+
+    function updateRealtimeClock() {
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      const days = ['日', '一', '二', '三', '四', '五', '六'];
+      const dayOfWeek = days[now.getDay()];
+      const hours = String(now.getHours()).padStart(2, '0');
+      const mins = String(now.getMinutes()).padStart(2, '0');
+      const secs = String(now.getSeconds()).padStart(2, '0');
+      
+      document.getElementById("topRealtimeClock").innerText = 
+        `⏰ 現在時間：${yyyy}/${mm}/${dd} (週${dayOfWeek}) ${hours}:${mins}:${secs}`;
+    }
+
+    function onDateChanged(newDate) {
+      if (!newDate) return;
+      currentDateStr = newDate;
+      syncDateInputs();
+      loadDataForCurrentDate();
+    }
+
+    function onWakeUpChanged(val) {
+      const dateObj = new Date(currentDateStr);
+      const today = dateObj.getDay();
+      if (today >= 1 && today <= 5) return; // 平日鎖定不能改
+      localStorage.setItem(`wakeUp_${currentDateStr}`, val);
+      calculateTime();
+      renderTimeline();
+    }
+
+    function onSleepChanged(val) {
+      const dateObj = new Date(currentDateStr);
+      const today = dateObj.getDay();
+      if (today >= 1 && today <= 5) return; // 平日鎖定不能改
+      localStorage.setItem(`sleep_${currentDateStr}`, val);
+      calculateTime();
+    }
+
+    function syncDateInputs() {
+      document.querySelectorAll('input[type="date"]').forEach(input => {
+        input.value = currentDateStr;
+      });
+      document.querySelectorAll('[id^="dateDisplay"]').forEach(el => {
+        el.innerText = `📅 目前檢視日期：${currentDateStr}`;
+      });
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+      
+      document.getElementById(tabId).classList.add('active');
+      
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        if (btn.getAttribute('onclick').includes(tabId)) {
+          btn.classList.add('active');
+        }
+      });
+    }
+
+    function loadDataForCurrentDate() {
+      const dateObj = new Date(currentDateStr);
+      const today = dateObj.getDay(); // 0=日, 1=一...6=六
+      const isWeekday = (today >= 1 && today <= 5);
+
+      const wakeUpInput = document.getElementById("wakeUpTime");
+      const breakfastStartInput = document.getElementById("breakfastStart");
+      const breakfastEndInput = document.getElementById("breakfastEnd");
+      const sleepInput = document.getElementById("sleepTime");
+
+      if (isWeekday) {
+        wakeUpInput.value = "07:15";
+        wakeUpInput.disabled = true;
+        document.getElementById("wakeUpLabel").innerText = "起床時間 (平日已鎖定 07:15)：";
+
+        breakfastStartInput.value = "07:30";
+        breakfastEndInput.value = "07:40";
+        breakfastStartInput.disabled = true;
+        breakfastEndInput.disabled = true;
+        document.getElementById("breakfastLabel").innerText = "早餐時間 (平日已鎖定 07:30-07:40)：";
+
+        sleepInput.value = "00:00";
+        sleepInput.disabled = true;
+        document.getElementById("sleepLabel").innerText = "睡覺時間 (平日已固定 00:00)：";
+      } else {
+        wakeUpInput.disabled = false;
+        document.getElementById("wakeUpLabel").innerText = "起床時間 (假日可自訂)：";
+        const savedWakeUp = localStorage.getItem(`wakeUp_${currentDateStr}`);
+        wakeUpInput.value = savedWakeUp ? savedWakeUp : "08:00";
+
+        breakfastStartInput.disabled = false;
+        breakfastEndInput.disabled = false;
+        document.getElementById("breakfastLabel").innerText = "早餐時間 (假日可自訂)：";
+
+        sleepInput.disabled = false;
+        document.getElementById("sleepLabel").innerText = "睡覺時間 (假日可自訂)：";
+        const savedSleep = localStorage.getItem(`sleep_${currentDateStr}`);
+        sleepInput.value = savedSleep ? savedSleep : "00:00";
+      }
+
+      calculateTime();
+      renderTimeline();
+      loadTodos();
+      loadTrackItems();
+      loadJournalForDate();
+      loadHistory();
+      updateTodayStudyDisplay();
+    }
+
+    function calculateTime() {
+      const dateObj = new Date(currentDateStr);
+      const today = dateObj.getDay(); 
+      let cramHours = 0;
+      let cramText = "今日無補習";
+
+      if (today === 2) { cramHours = 3; cramText = "星期二晚上物理課"; }
+      else if (today === 3) { cramHours = 3; cramText = "立人高一數 (18:00-21:00)"; }
+      else if (today === 4) { cramHours = 3; cramText = "立人高二數學 (18:00-21:00)"; }
+      else if (today === 6) { cramHours = 3; cramText = "立人高一英文 (18:00-21:00)"; }
+
+      document.getElementById("todayCramInfo").innerText = cramText;
+
+      let schoolHours = (today >= 1 && today <= 5) ? 8.9 : 0;
+      
+      const wakeUpVal = document.getElementById("wakeUpTime").value || "07:15";
+      const [wakeH, wakeM] = wakeUpVal.split(':').map(Number);
+      let sleepHours = (wakeH + wakeM / 60); 
+      let mealHours = 2.0;
+
+      let totalDeduction = schoolHours + sleepHours + cramHours + mealHours;
+      let goldenTime = Math.max(0, 24.0 - totalDeduction);
+
+      // 浪費時間計算
+      let now = new Date();
+      let isToday = (currentDateStr === new Date().toISOString().split('T')[0]);
+      let hoursPassed = isToday ? (now.getHours() + now.getMinutes() / 60) : 24.0;
+      
+      let studyMins = parseInt(localStorage.getItem(`studyMinutes_${currentDateStr}`) || "0");
+      let studyHours = studyMins / 60;
+
+      let wasted = 0;
+      let sleepPassed = Math.min(sleepHours, hoursPassed);
+      let schoolPassed = 0;
+
+      if (today >= 1 && today <= 5) {
+        schoolPassed = hoursPassed > 8.05 ? Math.min(8.9, hoursPassed - 8.05) : 0;
+        wasted = Math.max(0, hoursPassed - sleepPassed - schoolPassed - studyHours);
+      } else {
+        wasted = Math.max(0, hoursPassed - sleepPassed - studyHours);
+      }
+
+      if (wasted > goldenTime) wasted = goldenTime;
+
+      document.getElementById("totalDeduction").innerText = totalDeduction.toFixed(2) + " 小時";
+      document.getElementById("goldenTime").innerText = goldenTime.toFixed(2) + " 小時";
+      document.getElementById("wastedTime").innerText = wasted.toFixed(2) + " 小時";
+
+      // 呈現明確的計算過程
+      let processHtml = `📌 <b>今日浪費時間明確計算過程（當天）：</b><br>`;
+      processHtml += `• 1. 已經過時間（目前時刻換算）：<b>${hoursPassed.toFixed(2)} 小時</b><br>`;
+      processHtml += `• 2. 扣除睡眠時間（00:00 至 起床 ${wakeUpVal}）：<b>-${sleepPassed.toFixed(2)} 小時</b><br>`;
+      if (today >= 1 && today <= 5) {
+        processHtml += `• 3. 扣除學校上課時段（08:05-17:00 經過部分）：<b>-${schoolPassed.toFixed(2)} 小時</b><br>`;
+      }
+      processHtml += `• 4. 扣除今日已專注累積時間：<b>-${studyHours.toFixed(2)} 小時 (${studyMins} 分鐘)</b><br>`;
+      processHtml += `• ➔ <b>計算結果：</b> ${hoursPassed.toFixed(2)} - ${sleepPassed.toFixed(2)} ${today >= 1 && today <= 5 ? '- ' + schoolPassed.toFixed(2) : ''} - ${studyHours.toFixed(2)} = <b style="color:var(--accent-warm);">${wasted.toFixed(2)} 小時</b>`;
+      
+      document.getElementById("calcProcessBox").innerHTML = processHtml;
+    }
+
+    function renderTimeline() {
+      const timelineEl = document.getElementById("timelineGrid");
+      timelineEl.innerHTML = "";
+      const dateObj = new Date(currentDateStr);
+      const today = dateObj.getDay();
+
+      const sprintBanner = document.getElementById("sprintBanner");
+      const tueCramBanner = document.getElementById("tueCramBanner");
+
+      if (today === 1 || today === 0) {
+        sprintBanner.style.display = "block";
+        tueCramBanner.style.display = "none";
+      } else if (today === 2) {
+        sprintBanner.style.display = "none";
+        tueCramBanner.style.display = "block";
+      } else {
+        sprintBanner.style.display = "none";
+        tueCramBanner.style.display = "none";
+      }
+
+      const savedTimeline = JSON.parse(localStorage.getItem(`timeline_${currentDateStr}`) || "{}");
+      const wakeUpVal = document.getElementById("wakeUpTime").value || "07:15";
+      const wakeHourInt = parseInt(wakeUpVal.split(':')[0]);
+
+      for (let h = 0; h < 24; h++) {
+        const hourStr = (h < 10 ? "0" + h : h) + ":00";
+        let isFixed = false;
+        let eventHtml = "";
+
+        if (h >= 0 && h < wakeHourInt) {
+          eventHtml = `<div class="event-block break">🌙 睡眠休息時間</div>`;
+          isFixed = true;
+        } else if (h === wakeHourInt) {
+          eventHtml = `<div class="event-block break">🌅 起床準備 / 早餐 (${wakeUpVal} 起床)</div>`;
+          isFixed = true;
+        } else if (today >= 1 && today <= 5 && h >= 8 && h < 17) {
+          if (h === 12) {
+            eventHtml = `<div class="event-block meal">🍱 午餐與午休時間 (11:55 - 13:05)</div>`;
+            isFixed = true;
+          } else if (h === 15) {
+            eventHtml = `<div class="event-block school">
+              🏫 上課時間 (15:50-16:10 下課大休息 20m)
+              <input type="text" class="break-task-input" value="打掃" readonly style="background: #e9e5f5; font-weight: bold;">
+            </div>`;
+            isFixed = true;
+          } else {
+            let userVal = savedTimeline[h] || "";
+            eventHtml = `<div class="event-block school">
+              🏫 學校上課時間
+              <input type="text" class="break-task-input" placeholder="✨ 記錄這節下課要做什麼..." value="${userVal}" oninput="saveTimelineHour(${h}, this.value)">
+            </div>`;
+            isFixed = true;
+          }
+        } 
+
+        if (!isFixed) {
+          const userVal = savedTimeline[h] || "";
+          eventHtml = `<input type="text" class="timeline-input" placeholder="點擊填寫此時段規劃..." value="${userVal}" oninput="saveTimelineHour(${h}, this.value)">`;
+        }
+
+        const row = document.createElement("div");
+        row.className = "timeline-hour";
+        row.innerHTML = `<div class="time-label">${hourStr}</div><div>${eventHtml}</div>`;
+        timelineEl.appendChild(row);
+      }
+    }
+
+    function saveTimelineHour(hour, val) {
+      const savedTimeline = JSON.parse(localStorage.getItem(`timeline_${currentDateStr}`) || "{}");
+      savedTimeline[hour] = val;
+      localStorage.setItem(`timeline_${currentDateStr}`, JSON.stringify(savedTimeline));
+    }
+
+    let timerInterval = null;
+    let timerType = 'countdown'; 
+    let timeLeft = 50 * 60; 
+    let stopwatchSeconds = 0; 
+    let isWorking = true;
+
+    function setTimerType(type) {
+      pauseTimer();
+      timerType = type;
+      document.getElementById("btnCountdownMode").classList.remove("active");
+      document.getElementById("btnStopwatchMode").classList.remove("active");
+      
+      if (type === 'countdown') {
+        document.getElementById("btnCountdownMode").classList.add("active");
+        isWorking = true;
+        timeLeft = 50 * 60;
+        document.getElementById("timerMode").innerText = "專注中 (50m)";
+      } else {
+        document.getElementById("btnStopwatchMode").classList.add("active");
+        stopwatchSeconds = 0;
+        document.getElementById("timerMode").innerText = "正計時中";
+      }
+      updateTimerDisplay();
+    }
+
+    function updateTimerDisplay() {
+      if (timerType === 'countdown') {
+        const m = Math.floor(timeLeft / 60);
+        const s = timeLeft % 60;
+        document.getElementById("timerDisplay").innerText = 
+          (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
+      } else {
+        const h = Math.floor(stopwatchSeconds / 3600);
+        const m = Math.floor((stopwatchSeconds % 3600) / 60);
+        const s = stopwatchSeconds % 60;
+        if (h > 0) {
+          document.getElementById("timerDisplay").innerText = 
+            (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
+        } else {
+          document.getElementById("timerDisplay").innerText = 
+            (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
+        }
+      }
+    }
+
+    function startTimer() {
+      if (timerInterval) return;
+      timerInterval = setInterval(() => {
+        if (timerType === 'countdown') {
+          if (timeLeft > 0) {
+            timeLeft--;
+            updateTimerDisplay();
+          } else {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            if (isWorking) {
+              addStudyMinutes(50);
+              alert("🎉 專注 50 分鐘完成！休息 10 分鐘吧！");
+              isWorking = false;
+              timeLeft = 10 * 60;
+              document.getElementById("timerMode").innerText = "休息中 (10m)";
+            } else {
+              alert("☕ 休息結束，準備開始下一階段專注！");
+              isWorking = true;
+              timeLeft = 50 * 60;
+              document.getElementById("timerMode").innerText = "專注中 (50m)";
+            }
+            updateTimerDisplay();
+          }
+        } else {
+          stopwatchSeconds++;
+          if (stopwatchSeconds % 60 === 0) {
+            addStudyMinutes(1);
+          }
+          updateTimerDisplay();
+        }
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+
+    function resetTimer() {
+      pauseTimer();
+      if (timerType === 'countdown') {
+        isWorking = true;
+        timeLeft = 50 * 60;
+        document.getElementById("timerMode").innerText = "專注中 (50m)";
+      } else {
+        stopwatchSeconds = 0;
+        document.getElementById("timerMode").innerText = "正計時中";
+      }
+      updateTimerDisplay();
+    }
+
+    function addStudyMinutes(mins) {
+      let currentMinutes = parseInt(localStorage.getItem(`studyMinutes_${currentDateStr}`) || "0");
+      currentMinutes += mins;
+      localStorage.setItem(`studyMinutes_${currentDateStr}`, currentMinutes);
+      updateTodayStudyDisplay();
+      calculateTime();
+    }
+
+    function updateTodayStudyDisplay() {
+      let currentMinutes = parseInt(localStorage.getItem(`studyMinutes_${currentDateStr}`) || "0");
+      document.getElementById("todayStudyTotal").innerText = currentMinutes;
+    }
+
+    function addTodo(type) {
+      const inputId = type === 'school' ? 'schoolTodoInput' : 'selfTodoInput';
+      const input = document.getElementById(inputId);
+      if (!input.value.trim()) return;
+
+      const key = `${type}Todos_${currentDateStr}`;
+      let todos = JSON.parse(localStorage.getItem(key) || "[]");
+      todos.push({ text: input.value.trim(), done: false });
+      localStorage.setItem(key, JSON.stringify(todos));
+      input.value = "";
+      loadTodos();
+    }
+
+    function toggleTodo(type, index) {
+      const key = `${type}Todos_${currentDateStr}`;
+      let todos = JSON.parse(localStorage.getItem(key) || "[]");
+      todos[index].done = !todos[index].done;
+      localStorage.setItem(key, JSON.stringify(todos));
+      loadTodos();
+    }
+
+    function deleteTodo(type, index) {
+      const key = `${type}Todos_${currentDateStr}`;
+      let todos = JSON.parse(localStorage.getItem(key) || "[]");
+      todos.splice(index, 1);
+      localStorage.setItem(key, JSON.stringify(todos));
+      loadTodos();
+    }
+
+    function loadTodos() {
+      const schoolTodos = JSON.parse(localStorage.getItem(`schoolTodos_${currentDateStr}`) || "[]");
+      const selfTodos = JSON.parse(localStorage.getItem(`selfTodos_${currentDateStr}`) || "[]");
+
+      document.getElementById("schoolTodoList").innerHTML = schoolTodos.map((t, i) => `
+        <li class="todo-item ${t.done ? 'completed' : ''}">
+          <label><input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTodo('school', ${i})"> <span>${t.text}</span></label>
+          <button style="background:none; border:none; cursor:pointer;" onclick="deleteTodo('school', ${i})">❌</button>
+        </li>
+      `).join('');
+
+      document.getElementById("selfTodoList").innerHTML = selfTodos.map((t, i) => `
+        <li class="todo-item ${t.done ? 'completed' : ''}">
+          <label><input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTodo('self', ${i})"> <span>${t.text}</span></label>
+          <button style="background:none; border:none; cursor:pointer;" onclick="deleteTodo('self', ${i})">❌</button>
+        </li>
+      `).join('');
+    }
+
+    function addTrackItem(trackNum) {
+      const input = document.getElementById(`track${trackNum}Input`);
+      if (!input.value.trim()) return;
+
+      const key = `trackItems_${currentDateStr}`;
+      let trackItems = JSON.parse(localStorage.getItem(key) || "{\"1\":[], \"2\":[], \"3\":[]}");
+      trackItems[trackNum].push({ text: input.value.trim(), done: false });
+      localStorage.setItem(key, JSON.stringify(trackItems));
+      input.value = "";
+      loadTrackItems();
+    }
+
+    function toggleTrackItem(trackNum, index) {
+      const key = `trackItems_${currentDateStr}`;
+      let trackItems = JSON.parse(localStorage.getItem(key) || "{\"1\":[], \"2\":[], \"3\":[]}");
+      trackItems[trackNum][index].done = !trackItems[trackNum][index].done;
+      localStorage.setItem(key, JSON.stringify(trackItems));
+      loadTrackItems();
+    }
+
+    function loadTrackItems() {
+      const key = `trackItems_${currentDateStr}`;
+      let trackItems = JSON.parse(localStorage.getItem(key) || "{\"1\":[], \"2\":[], \"3\":[]}");
+      for (let i = 1; i <= 3; i++) {
+        const listEl = document.getElementById(`track${i}List`);
+        listEl.innerHTML = (trackItems[i] || []).map((item, idx) => `
+          <li class="todo-item ${item.done ? 'completed' : ''}">
+            <label><input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleTrackItem(${i}, ${idx})"> <span>${item.text}</span></label>
+          </li>
+        `).join('');
+      }
+    }
+
+    let selectedSkin = "💧 穩定水潤";
+
+    function selectSkin(btn, skin) {
+      document.querySelectorAll('.skin-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedSkin = skin;
+    }
+
+    function saveJournal() {
+      const mood = document.getElementById("journalMood").value;
+      const text = document.getElementById("journalText").value;
+
+      if (!text.trim()) {
+        alert("請輸入一些日記內容再儲存喔！");
+        return;
+      }
+
+      const journalData = { date: currentDateStr, skin: selectedSkin, mood, text };
+      localStorage.setItem(`journal_${currentDateStr}`, JSON.stringify(journalData));
+
+      let logs = JSON.parse(localStorage.getItem("journalLogsList") || "[]");
+      logs = logs.filter(l => l.date !== currentDateStr); 
+      logs.unshift(journalData);
+      localStorage.setItem("journalLogsList", JSON.stringify(logs));
+
+      alert("✨ 當日日記與肌膚狀態已成功記錄！");
+      loadHistory();
+    }
+
+    function loadJournalForDate() {
+      const saved = JSON.parse(localStorage.getItem(`journal_${currentDateStr}`) || "null");
+      if (saved) {
+        document.getElementById("journalMood").value = saved.mood;
+        document.getElementById("journalText").value = saved.text;
+        selectedSkin = saved.skin;
+        document.querySelectorAll('.skin-btn').forEach(btn => {
+          if (btn.innerText.includes(saved.skin.replace(/^[^\s]+\s*/, ''))) {
+            document.querySelectorAll('.skin-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+          }
+        });
+      } else {
+        document.getElementById("journalText").value = "";
+      }
+    }
+
+    function loadHistory() {
+      const historyEl = document.getElementById("historyLogsList");
+      const logs = JSON.parse(localStorage.getItem("journalLogsList") || "[]");
+
+      if (logs.length === 0) {
+        historyEl.innerHTML = `<p style="color: var(--text-muted);">目前還沒有留下的日記紀錄，快去寫下第一篇吧！</p>`;
+        return;
+      }
+
+      historyEl.innerHTML = logs.map(log => `
+        <div class="history-card">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <b>📅 ${log.date}</b>
+            <span>${log.mood} | 肌膚：${log.skin}</span>
+          </div>
+          <p style="white-space: pre-wrap; color: var(--text-dark);">${log.text}</p>
+        </div>
+      `).join('');
+    }
+  </script>
+</body>
+</html>
